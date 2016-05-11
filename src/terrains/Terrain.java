@@ -13,12 +13,19 @@ public class Terrain {
     private float z;
     private RawModel model;
     private ModelTexture texture;
+    
+    private float[] vertices;
+    private float[] normals;
+    float[] textureCoords;
+    int[] indices;
+    Loader loader;
      
     public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture){
         this.texture = texture;
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.model = generateTerrain(loader);
+        this.loader = loader;
+        model = generateTerrain(loader);
     }
      
      
@@ -44,15 +51,38 @@ public class Terrain {
     public ModelTexture getTexture() {
         return texture;
     }
+    
+    public float getHeightSimple(float x, float z)	{
+    	
+    	for(int i = 0; i < vertices.length; i+= 3)	{
+    		if(vertices[i] == x && vertices[i+2] == z){
+    			return vertices[i+1];
+    		}
+    	}
+    	return 0;
+    	
+    }
  
- 
- 
+    /*
+    public void changeHeight(float xStart, float xLim, float zStart, float zLim, float amount)	{
+    	int number = 0;
+    	for(int i = 0; i < vertices.length; i+=3)	{
+    		if(-vertices[i] > xStart && -vertices[i] > xLim && -vertices[i+2] > zStart && -vertices[i+2] > zLim)	{
+    			if(vertices[i+1] < 30)
+    				vertices[i+1] += amount;
+    			
+    		}
+    	}
+    	
+    	model = loader.loadToVAO(vertices, textureCoords, normals, indices);
+    }
+ 	*/
     private RawModel generateTerrain(Loader loader){
         int count = VERTEX_COUNT * VERTEX_COUNT;
-        float[] vertices = new float[count * 3];
-        float[] normals = new float[count * 3];
-        float[] textureCoords = new float[count*2];
-        int[] indices = new int[6*(VERTEX_COUNT-1)*(VERTEX_COUNT*1)];
+        vertices = new float[count * 3];
+        normals = new float[count * 3];
+        textureCoords = new float[count*2];
+        indices = new int[6*(VERTEX_COUNT-1)*(VERTEX_COUNT*1)];
         int vertexPointer = 0;
         for(int i=0;i<VERTEX_COUNT;i++){
             for(int j=0;j<VERTEX_COUNT;j++){
@@ -84,5 +114,15 @@ public class Terrain {
         }
         return loader.loadToVAO(vertices, textureCoords, normals, indices);
     }
+    
+    public void printVert()		{
+		if(vertices != null)	{
+			for(int i = 0; i < vertices.length - 3; i += 3)	{
+				if(vertices[i+1] != 0)
+					System.out.println("Y: " + vertices[i+1]);
+			}
+		}
+		System.out.println("\n");
+	}
  
 }

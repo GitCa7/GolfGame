@@ -1,0 +1,150 @@
+package engineTester;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector3f;
+
+import Shaders.StaticShader;
+import entities.Camera;
+import entities.Entity;
+import entities.GolfBall;
+import entities.Light;
+import models.RawModel;
+import models.TexturedModel;
+import renderEngine.DisplayManager;
+import renderEngine.Loader;
+import renderEngine.MasterRenderer;
+import renderEngine.MasterRendererHM;
+import renderEngine.OBJLoader;
+import terrains.Terrain;
+import terrains.Terrain2;
+import renderEngine.EntityRenderer;
+import textures.ModelTexture;
+import toolbox.MousePicker;
+
+public class MainGameLoop {
+
+	 public static void main(String[] args) {
+		 
+		 
+		 	//For Displaying everything
+	        DisplayManager.createDisplay();
+	        
+	        
+	        
+	        //For loading Models and Objects
+	        Loader loader = new Loader();
+	        
+	        /*
+	        RawModel GolfBallModel = OBJLoader.loadObjModel("golfBallblend", loader);
+	        TexturedModel staticModel = new TexturedModel(GolfBallModel,new ModelTexture(loader.loadTexture("stallTexture")));
+	        */
+	        
+	        RawModel model = OBJLoader.loadObjModel("golfBallblend", loader);
+	        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture")));
+	        Entity golfB = new Entity(staticModel, new Vector3f(-400,20,-390), 0, 0, 0, 3);
+	        
+	        
+	        
+	        
+	        //MasterRendererHM renderer = new MasterRendererHM(loader);
+	        MasterRenderer renderer = new MasterRenderer();
+
+	        
+	        //Environment
+	        //List<Terrain> terrains = new ArrayList<Terrain>();
+	        ModelTexture Grasstex = new ModelTexture(loader.loadTexture("GrassTex"));
+	        
+	        //Terrain2 terrain = new Terrain2(0,0,loader,Grasstex, "heightmap");
+	        Terrain terrain = new Terrain(0,0,loader,Grasstex);
+	        
+	        //Terrain terrain2 = new Terrain(1,0,loader,new ModelTexture(loader.loadTexture("grassNew")));
+	        //Terrain terrain3 = new Terrain(-1,0,loader,new ModelTexture(loader.loadTexture("grassNew")));
+	        //terrains.add(terrain);
+	        //terrains.add(terrain2);
+	        
+	        //For Environment INteraction
+	        System.out.println("CameraX: " + terrain.getX() + " | CameraZ: " + terrain.getZ());
+	        Camera camera = new Camera(new Vector3f(-400,20,-400));
+	        //MousePicker mousePick = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+	        
+	         
+	       
+	        
+	        
+	        RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
+	        ModelTexture grassModelText = new ModelTexture(loader.loadTexture("grassTexture"));
+	        grassModelText.setHasTranspercy(true);
+	        grassModelText.setUseFakeLighting(true);
+	        
+	        RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
+	        ModelTexture fernModelText = new ModelTexture(loader.loadTexture("fern"));
+	        fernModelText.setHasTranspercy(true);
+	        fernModelText.setUseFakeLighting(true);
+	        
+	        TexturedModel grassTextModel = new TexturedModel(grassModel, grassModelText);
+	        TexturedModel fernTextModel = new TexturedModel(fernModel, fernModelText);
+	        
+	        
+	        RawModel dragModel = OBJLoader.loadObjModel("dragon", loader);
+	        TexturedModel dragStatic = new TexturedModel(model,new ModelTexture(loader.loadTexture("stallTexture")));
+	        Entity dragon = new Entity(dragStatic, new Vector3f(-400,terrain.getHeightSimple(-400, -390),-390), 0, 0, 0, 3);
+	        
+	        
+	        List<Entity> entities = new ArrayList<Entity>();
+	        entities.add(golfB);
+	        entities.add(dragon);
+	        
+	        Random ran = new Random();
+	        float x,z;
+	        for(int i = 0; i< 100; i++)	{
+	        	x = ran.nextFloat() * 400 - 400;
+	        	z = ran.nextFloat() * -1000;
+	        	entities.add(new Entity(grassTextModel, new Vector3f(x, terrain.getHeightSimple(x, z)+3, z), 180, 0, 0, 3));
+	        	
+	        	x = ran.nextFloat() * 400 - 400;
+	        	z = ran.nextFloat() * -1000;
+	        	entities.add(new Entity(fernTextModel, new Vector3f(x, terrain.getHeightSimple(x, z), z), 0, 0, 0, 3));
+	        }
+	        
+	        Light light = new Light(new Vector3f(20000,20000,2000),new Vector3f(1,1,1));
+	         
+	         
+	       
+	        
+	        
+	        while(!Display.isCloseRequested()){
+	            camera.move();
+	            //mousePick.update();
+	            //System.out.println(mousePick.getCurrentRay().x + " | " + mousePick.getCurrentRay().y + " | " + mousePick.getCurrentRay().z);
+	            //System.out.println(mousePick.getCurrentRay());
+
+	            /*
+	            for(Terrain terra:terrains)	{
+	            	renderer.processTerrain(terra);
+	            }
+	            */
+	            
+            	//renderer.processTerrain(terrain);
+	            renderer.processTerrain(terrain);
+	            for(Entity entity:entities){
+	                renderer.processEntity(entity);
+	                
+	            }
+	            
+	            
+	            renderer.render(light, camera);
+	            DisplayManager.updateDisplay();
+	        }
+	 
+	        renderer.cleanUp();
+	        loader.cleanUp();
+	        DisplayManager.closeDisplay();
+	 
+	    }
+	
+}
