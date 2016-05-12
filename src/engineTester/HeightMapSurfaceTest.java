@@ -21,6 +21,7 @@ import renderEngine.OBJLoader;
 import terrains.Terrain;
 import terrains.Terrain2;
 import textures.ModelTexture;
+import toolbox.MousePicker;
 
 public class HeightMapSurfaceTest {
 
@@ -36,6 +37,7 @@ public class HeightMapSurfaceTest {
 		ArrayList<Terrain2> terrains;
 		Camera cam;
 		Light light;
+		MousePicker mousePick, mousePick2;
 		
 		
 		
@@ -49,11 +51,18 @@ public class HeightMapSurfaceTest {
 			cam = new Camera();
 			
 			
+			
 			createSurrondings();
 			setUpTerrain();
 			setUpScene();
 			setUpEntities();
+			
+			mousePick = new MousePicker(cam, renderer.getProjectionMatrix(), terrains.get(0));
+			mousePick2 = new MousePicker(cam, renderer.getProjectionMatrix(), terrains.get(1));
+			
 			startGame();
+			
+			
 		}
 		
 		public void createSurrondings()	{
@@ -112,6 +121,19 @@ public class HeightMapSurfaceTest {
 	           
 	           for(Terrain2 terrain:terrains)	{
 	        	   renderer.processTerrain(terrain);
+	           }
+	           
+	           
+	           mousePick.update();
+	           mousePick2.update();
+	           
+	           Vector3f Vec = mousePick.getCurrentTerrainPoint();
+	           Vector3f Vec2 = mousePick2.getCurrentTerrainPoint();
+	           if(mousePick.getCurrentTerrainPoint() != null)	{
+	        	   System.out.println(Vec.x + "\t|\t" + Vec.y + "\t|\t" + Vec.z);
+	           }
+	           if(mousePick2.getCurrentTerrainPoint() != null)	{
+	        	   System.out.println(Vec2.x + "\t|\t" + Vec2.y + "\t|\t" + Vec2.z);
 	           }
 	           
 	           renderer.render(light, cam);
