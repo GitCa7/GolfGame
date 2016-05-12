@@ -16,6 +16,8 @@ import textures.ModelTexture;
 public class Terrain2 {
 	
 	
+	
+	
 	public static void main(String[] args)	{
 		Loader loader = new Loader();
 		Terrain2 terrain = new Terrain2(0,0,loader,new ModelTexture(loader.loadTexture("grassNew")));
@@ -25,6 +27,7 @@ public class Terrain2 {
 	
     
 	private static final float SIZE = 1000;
+	private int VERTEX_COUNT;
     
     private static final float MAX_HEIGHT = 80;
     private static final float MAX_PIXEL_COLOR = 256 * 256 * 256;
@@ -199,7 +202,7 @@ public class Terrain2 {
     
     private RawModel generateTerrain(Loader loader, String heightMap){
         
-    	int VERTEX_COUNT = 0;
+    	VERTEX_COUNT = 0;
     	
     	BufferedImage image = null;
     	if(heightMapUse == true)	{
