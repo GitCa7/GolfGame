@@ -166,6 +166,17 @@ public class Terrain2 {
     }
  	*/
     
+    public Vector3f[] getVertasVec()	{
+    	Vector3f[] returnVector = new Vector3f[VERTEX_COUNT * VERTEX_COUNT];
+    	int offset = 0;
+    	for(int i = 0; i < vertices.length - 3; i+= 3)	{
+    		returnVector[offset] = new Vector3f(vertices[i], vertices[i+1], vertices[i+2]);
+    		offset++;
+    	}
+    	return returnVector;
+    	
+    }
+    
     
     public void printVert()		{
 		if(vertices != null)	{
